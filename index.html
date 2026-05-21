@@ -183,12 +183,14 @@
 </div>
 
 <script>
+// Mantenemos la configuración de las sucursales del archivo original
 const sucursales = {
   "Honda Jujuy": { almacen:104, capacidad:100 },
   "Brown 902": { almacen:38, capacidad:140 },
   "Brown 2296": { almacen:37, capacidad:230 }
 };
 
+// Al cargar la página, va a buscar de forma transparente el 'datos.xlsx' en tu repositorio
 window.addEventListener("DOMContentLoaded", () => {
   const badge = document.getElementById("statusBadge");
   
@@ -205,7 +207,7 @@ window.addEventListener("DOMContentLoaded", () => {
       badge.className = "badge bg-success text-white badge-status";
     })
     .catch(() => {
-      badge.innerHTML = "❌ Error de conexión";
+      badge.innerHTML = "❌ Error de archivo (.xlsx)";
       badge.className = "badge bg-danger text-white badge-status";
     });
 });
@@ -232,6 +234,8 @@ function procesarExcel(workbook){
     if(datos.length === 0) return;
 
     const headers = datos[0];
+    
+    // Filtro original para ignorar celdas vacías
     const filas = datos.slice(1).filter(row => row.some(cell => cell !== undefined && cell !== ""));
 
     const stock = filas.length;
