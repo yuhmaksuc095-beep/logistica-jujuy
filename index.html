@@ -61,12 +61,12 @@
       background: #64748b;
     }
 
-    /* CORRECCIÓN CRÍTICA: Tablas en Modo Oscuro Real (Evita el fondo blanco de Bootstrap) */
+    /* TABLAS MODO OSCURO - Fuerza visibilidad total de los datos */
     .table-dark-custom {
       width: 100%;
       margin-bottom: 0 !important;
       background-color: #111e38 !important;
-      color: #f8fafc !important;
+      color: #ffffff !important; /* Fuerza todo el texto a blanco puro */
       border-collapse: collapse;
     }
 
@@ -86,7 +86,7 @@
 
     .table-dark-custom td {
       background-color: #111e38 !important; /* Anula el blanco de Bootstrap */
-      color: #e2e8f0 !important; /* Texto gris claro/blanco de alta visibilidad */
+      color: #ffffff !important; /* CAMBIO: Todo el contenido numérico y de texto ahora es blanco brillante */
       padding: 12px 10px;
       border: 1px solid #233554 !important; /* Bordes azul oscuro */
     }
@@ -252,7 +252,7 @@ function procesarExcel(workbook) {
       <td class="fw-bold text-white">${stock}</td>
       <td class="${faltan > 0 ? 'status-alert' : 'status-ok'}">${faltan}</td>
       <td class="${sobran > 0 ? 'status-alert' : 'status-ok'}">${sobran}</td>
-      <td class="fw-bold text-white">${camiones > 0 ? '¼Ÿšš ' + camiones : '0'}</td>
+      <td class="fw-bold text-warning">${camiones > 0 ? camiones + ' Camión(es)' : '0'}</td>
     `;
     resumenBody.appendChild(row);
 
@@ -276,7 +276,7 @@ function procesarExcel(workbook) {
   // Renderización de contadores en los paneles KPI de la zona superior
   document.getElementById("kpiTotalStock").innerText = globalStock;
   document.getElementById("kpiTotalFaltantes").innerText = globalFaltantes;
-  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " Ÿšš" : "0";
+  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " Camiones" : "0";
 }
 </script>
 </body>
