@@ -25,7 +25,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    /* Estilos de las Tarjetas */
+    /* Estilos de las Tarjetas de los Bloques */
     .card {
       background: #1e293b; /* Fondo de tarjetas gris oscuro */
       border: 1px solid #334155;
@@ -33,8 +33,32 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
+    /* CORRECCIÓN CRÍTICA DE CONTRASTE PARA LOS CARD KPIS SUPERIORES */
     .kpi-card {
       border-left: 5px solid #38bdf8; /* Azul celeste brillante */
+    }
+    
+    .kpi-title {
+      color: #94a3b8 !important; /* Gris claro de alta visibilidad para los títulos de las tarjetas */
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-number-white {
+      color: #ffffff !important; /* Blanco brillante e intenso */
+      font-weight: 700;
+    }
+
+    .kpi-number-red {
+      color: #ef4444 !important; /* Rojo vivo y sumamente llamativo */
+      font-weight: 700;
+    }
+
+    .kpi-number-yellow {
+      color: #f59e0b !important; /* Amarillo/Dorado encendido */
+      font-weight: 700;
     }
 
     /* Diseño del contenedor con barra de desplazamiento (Scrollbar) */
@@ -66,7 +90,7 @@
       width: 100%;
       margin-bottom: 0 !important;
       background-color: #111e38 !important;
-      color: #ffffff !important; /* Fuerza todo el texto a blanco puro */
+      color: #ffffff !important; 
       border-collapse: collapse;
     }
 
@@ -86,7 +110,7 @@
 
     .table-dark-custom td {
       background-color: #111e38 !important; /* Anula el blanco de Bootstrap */
-      color: #ffffff !important; /* CAMBIO: Todo el contenido numérico y de texto ahora es blanco brillante */
+      color: #ffffff !important; /* Todo el contenido numérico y de texto ahora es blanco brillante */
       padding: 12px 10px;
       border: 1px solid #233554 !important; /* Bordes azul oscuro */
     }
@@ -127,20 +151,20 @@
   <div class="row g-3 mb-4">
     <div class="col-md-4">
       <div class="card p-3 kpi-card">
-        <div class="text-muted small text-uppercase fw-bold">Motos Totales en Stock</div>
-        <div id="kpiTotalStock" class="fs-2 fw-bold text-white">-</div>
+        <div class="kpi-title">Motos Totales en Stock</div>
+        <div id="kpiTotalStock" class="fs-2 kpi-number-white">-</div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card p-3 kpi-card" style="border-left-color: #f87171;">
-        <div class="text-muted small text-uppercase fw-bold">Total Faltante para Cupos</div>
-        <div id="kpiTotalFaltantes" class="fs-2 fw-bold text-danger">-</div>
+        <div class="kpi-title">Total Faltante para Cupos</div>
+        <div id="kpiTotalFaltantes" class="fs-2 kpi-number-red">-</div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card p-3 kpi-card" style="border-left-color: #fbbf24;">
-        <div class="text-muted small text-uppercase fw-bold text-truncate">Camiones Totales Necesarios</div>
-        <div id="kpiTotalCamiones" class="fs-2 fw-bold text-warning">-</div>
+        <div class="kpi-title">Camiones Totales Necesarios</div>
+        <div id="kpiTotalCamiones" class="fs-2 kpi-number-yellow">-</div>
       </div>
     </div>
   </div>
@@ -252,7 +276,7 @@ function procesarExcel(workbook) {
       <td class="fw-bold text-white">${stock}</td>
       <td class="${faltan > 0 ? 'status-alert' : 'status-ok'}">${faltan}</td>
       <td class="${sobran > 0 ? 'status-alert' : 'status-ok'}">${sobran}</td>
-      <td class="fw-bold text-warning">${camiones > 0 ? camiones + ' Camión(es)' : '0'}</td>
+      <td class="fw-bold text-warning">${camiones > 0 ? camiones + ' Camion(es)' : '0'}</td>
     `;
     resumenBody.appendChild(row);
 
