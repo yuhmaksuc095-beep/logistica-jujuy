@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logística de Sucursales Jujuy</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <style>
+    body{ font-family: Arial, sans-serif; background:#f4f6f9; padding:20px; margin:0; }
+    h1{ text-align:center; margin-bottom:25px; }
+    .card{ background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    table{ width:100%; border-collapse:collapse; margin-top:15px; background:white; }
+    th, td{ border:1px solid #ccc; padding:10px; text-align:center; }
+    th{ background:#0d6efd; color:white; }
+    .green{ color:green; font-weight:bold; }
+    .red{ color:red; font-weight:bold; }
+    #status{ margin-top:10px; font-weight:bold; text-align:center; }
+  </style>
+</head>
+<body>
+
+<h1>Logística de Sucursales Jujuy</h1>
+
+<div class="card">
+  <div id="status">⏳ Cargando últimas actualizaciones de stock...</div>
+</div>
+
+<div class="card">
+  <h2>Resumen de Sucursales</h2>
+  <table id="summaryTable">
+    <thead>
+      <tr>
+        <th>Sucursal</th>
+        <th>Almacén</th>
+        <th>Capacidad</th>
+        <th>Motos en Stock</th>
+        <th>Faltan para Cupo</th>
+        <th>Sobran</th>
+        <th>Camiones Necesarios</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Listado de Motos</h2>
+  <table id="motosTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const sucursales = {
+  "Honda Jujuy": { almacen:104, capacidad:100 },
+  "Brown 902": { almacen:38, capacidad:140 },
+  "Brown 2296": { almacen:37, capacidad:230 }
+};
+
+// Al cargar la página, va a buscar automáticamente el archivo 'datos.xlsx' en el servidor
+window.addEventListener("DOMContentLoaded", () => {
+  const statusDiv = document.getElementById("status");
+  
+  // Agregamos un número aleatorio al final para evitar que el navegador guarde una copia vieja (caché)
+  fetch("datos.xlsx?v=" + Math.random())
+    .then(res => {
+      if (!res.ok) throw new Error("No se encontró el archivo datos.xlsx");
+      return res.arrayBuffer();
+    })
+    .then(buffer => {
+      const data = new Uint8Array(buffer);
+      const workbook = XLSX.read(data, {type:'array'});
+      procesarExcel(workbook);
+      statusDiv.innerHTML = "✅ Datos actualizados en tiempo real";
+    })
+    .catch(err => {
+      console.error(err);
+      statusDiv.innerHTML = "❌ Error al cargar el stock. Asegurate de que 'datos.xlsx' esté subido.";
+    });
+});
+
+function procesarExcel(workbook){
+  const resumenBody = document.querySelector("#summaryTable tbody");
+  resumenBody.innerHTML = "";
+  const motosHead = document.querySelector("#motosTable thead");
+  const motosBody = document.querySelector("#motosTable tbody");
+  motosHead.innerHTML = "";
+  motosBody.innerHTML = "";
+
+  let headersCargados = false;
+
+  Object.keys(sucursales).forEach(nombreSucursal => {
+    const hoja = workbook.Sheets[nombreSucursal];
+    if(!hoja) return;
+
+    const datos = XLSX.utils.sheet_to_json(hoja, {header:1});
+    if(datos.length === 0) return;
+
+    const headers = datos[0];
+    const filas = datos.slice(1).filter(row => row.some(cell => cell !== undefined && cell !== ""));
+
+    const stock = filas.length;
+    const capacidad = sucursales[nombreSucursal].capacidad;
+    const almacen = sucursales[nombreSucursal].almacen;
+    const faltan = Math.max(capacidad - stock, 0);
+    const sobran = Math.max(stock - capacidad, 0);
+    const camiones = faltan > 0 ? Math.ceil(faltan / 8) : 0;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${nombreSucursal}</td>
+      <td>${almacen}</td>
+      <td>${capacidad}</td>
+      <td>${stock}</td>
+      <td class="${faltan > 0 ? 'red' : 'green'}">${faltan}</td>
+      <td class="${sobran > 0 ? 'red' : 'green'}">${sobran}</td>
+      <td>${camiones}</td>
+    `;
+    resumenBody.appendChild(row);
+
+    if(!headersCargados){
+      const headRow = document.createElement("tr");
+      headRow.innerHTML = "<th>Sucursal</th>" + headers.map(h => `<th>${h || ""}</th>`).join("");
+      motosHead.appendChild(headRow);
+      headersCargados = true;
+    }
+
+    filas.forEach(fila => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${nombreSucursal}</td>` + headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
+      motosBody.appendChild(tr);
+    });
+  });
+}
+</script>
+</body>
+</html>
