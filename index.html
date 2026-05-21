@@ -25,7 +25,7 @@
     }
 
     .navbar-brand img {
-      max-height: 40px; /* Tamaño controlado para el logo */
+      max-height: 32px; /* Tamaño optimizado para el logo */
       width: auto;
     }
 
@@ -48,7 +48,7 @@
       margin-bottom: 0;
     }
 
-    .table-striped tbody tr:nth-of-type(odd) {
+    .table-striped tbody tr:none {
       background-color: #1e293b;
     }
     
@@ -115,7 +115,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
   <div class="container d-flex justify-content-between align-items-center">
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="https://yuhmak.com.ar/wp-content/uploads/2021/04/Logo-Yuhmak-Web-01.png" alt="Yuhmak Argentina" class="me-2">
+      <img src="https://i.imgur.com/rM7sT6w.png" alt="Yuhmak Argentina" class="me-2">
       <span class="fs-5 fw-bold text-white ms-2 d-none d-sm-inline">| Logística Jujuy</span>
     </a>
     <span id="statusBadge" class="badge bg-secondary text-white badge-status fw-medium">⏳ Cargando...</span>
@@ -183,14 +183,12 @@
 </div>
 
 <script>
-// Mantenemos la configuración de las sucursales del archivo original
 const sucursales = {
   "Honda Jujuy": { almacen:104, capacidad:100 },
   "Brown 902": { almacen:38, capacidad:140 },
   "Brown 2296": { almacen:37, capacidad:230 }
 };
 
-// Al cargar la página, va a buscar de forma transparente el 'datos.xlsx' en tu repositorio
 window.addEventListener("DOMContentLoaded", () => {
   const badge = document.getElementById("statusBadge");
   
@@ -220,25 +218,41 @@ function procesarExcel(workbook){
   motosHead.innerHTML = "";
   motosBody.innerHTML = "";
 
-  let headersCargados = false;
-  
   let globalStock = 0;
   let globalFaltantes = 0;
   let globalCamiones = 0;
+  
+  // Encontrar el conjunto de todas las columnas únicas de todas las hojas combinadas
+  let todosLosHeaders = new Set();
+  Object.keys(sucursales).forEach(nombreSucursal => {
+    const hoja = workbook.Sheets[nombreSucursal];
+    if(!hoja) return;
+    const datos = XLSX.utils.sheet_to_json(hoja, {header:1});
+    if(datos.length > 0 && datos[0]) {
+      datos[0].forEach(h => { if(h) todosLosHeaders.add(h); });
+    }
+  });
+  
+  const listaHeadersFinal = Array.from(todosLosHeaders);
+
+  // Armar la cabecera del listado detallado de motos de forma dinámica y completa
+  const headRow = document.createElement("tr");
+  headRow.innerHTML = "<th>Sucursal</th>" + listaHeadersFinal.map(h => `<th>${h}</th>`).join("");
+  motosHead.appendChild(headRow);
 
   Object.keys(sucursales).forEach(nombreSucursal => {
     const hoja = workbook.Sheets[nombreSucursal];
     if(!hoja) return;
 
-    const datos = XLSX.utils.sheet_to_json(hoja, {header:1});
-    if(datos.length === 0) return;
-
-    const headers = datos[0];
+    // Convertimos la hoja a objetos clave-valor para evitar problemas si las columnas se mueven de lugar
+    const filasObjetos = XLSX.utils.sheet_to_json(hoja);
     
-    // Filtro original para ignorar celdas vacías
-    const filas = datos.slice(1).filter(row => row.some(cell => cell !== undefined && cell !== ""));
+    // Filtro para limpiar filas fantasmas o completamente vacías
+    const filasValidas = filasObjetos.filter(fila => 
+      Object.values(fila).some(val => val !== undefined && val !== "")
+    );
 
-    const stock = filas.length;
+    const stock = filasValidas.length;
     const capacidad = sucursales[nombreSucursal].capacidad;
     const almacen = sucursales[nombreSucursal].almacen;
     const faltan = Math.max(capacidad - stock, 0);
@@ -249,6 +263,7 @@ function procesarExcel(workbook){
     globalFaltantes += faltan;
     globalCamiones += camiones;
 
+    // Insertar fila de resumen
     const row = document.createElement("tr");
     row.innerHTML = `
       <td class="fw-bold text-start ps-3 text-white">${nombreSucursal}</td>
@@ -261,20 +276,22 @@ function procesarExcel(workbook){
     `;
     resumenBody.appendChild(row);
 
-    if(!headersCargados){
-      const headRow = document.createElement("tr");
-      headRow.innerHTML = "<th>Sucursal</th>" + headers.map(h => `<th>${h || ""}</th>`).join("");
-      motosHead.appendChild(headRow);
-      headersCargados = true;
-    }
-
-    filas.forEach(fila => {
+    // Insertar cada una de las motos en la lista detallada asegurando la columna correcta
+    filasValidas.forEach(filaObjeto => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="text-muted-custom small text-start ps-3">${nombreSucursal}</td>` + headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
+      
+      let celdasHTML = `<td class="text-muted-custom small text-start ps-3 fw-medium">${nombreSucursal}</td>`;
+      listaHeadersFinal.forEach(headerKey => {
+        const valorCelda = filaObjeto[headerKey] ?? "";
+        celdasHTML += `<td>${valorCelda}</td>`;
+      });
+      
+      tr.innerHTML = celdasHTML;
       motosBody.appendChild(tr);
     });
   });
 
+  // Actualizar los paneles principales (KPIs)
   document.getElementById("kpiTotalStock").innerText = globalStock;
   document.getElementById("kpiTotalFaltantes").innerText = globalFaltantes;
   document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " 🚛" : "0";
