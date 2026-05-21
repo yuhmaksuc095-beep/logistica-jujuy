@@ -11,7 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* Configuración General del Tema Oscuro */
+    /* Configuración Global del Tema Oscuro */
     body {
       font-family: 'Inter', sans-serif;
       background-color: #0f172a; /* Fondo azul oscuro profundo */
@@ -33,10 +33,6 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
-    .text-dark {
-      color: #ffffff !important; /* Fuerza textos a blanco en modo oscuro */
-    }
-
     .kpi-card {
       border-left: 5px solid #38bdf8; /* Azul celeste brillante */
     }
@@ -45,11 +41,11 @@
     .table-container {
       border-radius: 8px;
       overflow: auto;
-      border: 1px solid #233554;
+      border: 1px solid #334155;
       max-height: 480px; /* Altura máxima para activar la barra de desplazamiento */
     }
 
-    /* Personalización de la barra de desplazamiento para que combine con el tema oscuro */
+    /* Personalización de la barra de desplazamiento */
     .table-container::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -58,40 +54,41 @@
       background: #0f172a;
     }
     .table-container::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: #475569;
       border-radius: 4px;
     }
     .table-container::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+      background: #64748b;
     }
 
-    /* Estilos de Tablas en Modo Oscuro */
-    .table {
-      background-color: #111e38;
-      color: #f8fafc;
+    /* CORRECCIÓN CRÍTICA: Tablas en Modo Oscuro Real (Evita el fondo blanco de Bootstrap) */
+    .table-dark-custom {
+      width: 100%;
       margin-bottom: 0 !important;
+      background-color: #111e38 !important;
+      color: #f8fafc !important;
+      border-collapse: collapse;
     }
 
-    .table th {
+    .table-dark-custom th {
+      position: sticky;
+      top: 0;
       background-color: #1e293b !important; /* Fondo de encabezados fijo */
       color: #38bdf8 !important; /* Títulos en azul celeste */
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.75rem;
       letter-spacing: 0.5px;
+      padding: 12px 10px;
       border-bottom: 2px solid #334155 !important;
-    }
-
-    .table td {
-      border-color: #233554 !important;
-      color: #cbd5e1;
-    }
-
-    /* Mantener encabezados fijos arriba mientras haces scroll */
-    .sticky-top-dark {
-      position: sticky;
-      top: 0;
       z-index: 10;
+    }
+
+    .table-dark-custom td {
+      background-color: #111e38 !important; /* Anula el blanco de Bootstrap */
+      color: #e2e8f0 !important; /* Texto gris claro/blanco de alta visibilidad */
+      padding: 12px 10px;
+      border: 1px solid #233554 !important; /* Bordes azul oscuro */
     }
 
     /* Alertas de Cupos adaptadas para contraste en Modo Oscuro */
@@ -152,8 +149,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="h4 fw-bold m-0 text-white">📊 Resumen de Sucursales</h2>
     </div>
-    <div class="table-responsive border border-secondary rounded">
-      <table id="summaryTable" class="table table-hover align-middle m-0 text-center">
+    <div class="table-container" style="max-height: none;">
+      <table id="summaryTable" class="table-dark-custom text-center align-middle">
         <thead>
           <tr>
             <th>Sucursal</th>
@@ -173,8 +170,8 @@
   <div class="card p-4">
     <h2 class="h4 fw-bold mb-3 text-white">📋 Detalle del Listado de Motos</h2>
     <div class="table-container">
-      <table id="motosTable" class="table table-hover align-middle text-center">
-        <thead class="sticky-top-dark">
+      <table id="motosTable" class="table-dark-custom text-center align-middle">
+        <thead>
           </thead>
         <tbody></tbody>
       </table>
@@ -193,7 +190,6 @@ const sucursales = {
 window.addEventListener("DOMContentLoaded", () => {
   const badge = document.getElementById("statusBadge");
   
-  // Agregamos un timestamp dinámico para evitar problemas de caché del navegador
   fetch("datos.xlsx?v=" + Math.random())
     .then(res => {
       if (!res.ok) throw new Error();
@@ -250,13 +246,13 @@ function procesarExcel(workbook) {
     // Fila del resumen de sucursal
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td class="fw-bold text-start ps-3 text-white">${nombreSucursal}</td>
+      <td class="fw-bold text-start ps-3 text-info">${nombreSucursal}</td>
       <td><span class="badge bg-dark border border-secondary text-light">${almacen}</span></td>
       <td>${capacidad}</td>
-      <td class="fw-bold text-info">${stock}</td>
+      <td class="fw-bold text-white">${stock}</td>
       <td class="${faltan > 0 ? 'status-alert' : 'status-ok'}">${faltan}</td>
       <td class="${sobran > 0 ? 'status-alert' : 'status-ok'}">${sobran}</td>
-      <td class="fw-bold text-white">${camiones > 0 ? '🚛 ' + camiones : '0'}</td>
+      <td class="fw-bold text-white">${camiones > 0 ? '¼Ÿšš ' + camiones : '0'}</td>
     `;
     resumenBody.appendChild(row);
 
@@ -271,7 +267,7 @@ function procesarExcel(workbook) {
     // Carga de filas del detalle de motos
     filas.forEach(fila => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="text-info small text-start ps-3 fw-medium">${nombreSucursal}</td>` + 
+      tr.innerHTML = `<td class="text-info small text-start ps-3 fw-bold">${nombreSucursal}</td>` + 
                      headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
       motosBody.appendChild(tr);
     });
@@ -280,7 +276,7 @@ function procesarExcel(workbook) {
   // Renderización de contadores en los paneles KPI de la zona superior
   document.getElementById("kpiTotalStock").innerText = globalStock;
   document.getElementById("kpiTotalFaltantes").innerText = globalFaltantes;
-  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " 🚛" : "0";
+  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " Ÿšš" : "0";
 }
 </script>
 </body>
