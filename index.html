@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Logística de Sucursales Jujuy</title>
+  <title>Logística de Sucursales Jujuy - Yuhmak</title>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,64 +11,114 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
+    /* Configuración Global del Tema Oscuro */
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
+      background-color: #0f172a; /* Fondo azul oscuro profundo */
+      color: #f8fafc; /* Texto claro */
     }
+    
     .navbar {
-      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+      background-color: #1e293b; /* Fondo de barra gris oscuro */
+      border-bottom: 1px solid #334155;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
+
+    .navbar-brand img {
+      max-height: 40px; /* Tamaño controlado para el logo */
+      width: auto;
+    }
+
     .card {
-      border: none;
+      background-color: #1e293b; /* Tarjetas gris oscuro */
+      border: 1px solid #334155;
       border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
     }
+
     .table-container {
       border-radius: 12px;
       overflow: hidden;
+      border: 1px solid #334155;
     }
+
+    /* Estilos de Tablas para Modo Oscuro */
+    .table {
+      color: #e2e8f0;
+      margin-bottom: 0;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #1e293b;
+    }
+    
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #1a2333; /* Alternancia sutil */
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #2e3d52 !important; /* Resaltado al pasar el mouse */
+    }
+
     .table th {
-      background-color: #f1f3f5;
-      color: #495057;
+      background-color: #0f172a !important;
+      color: #94a3b8 !important;
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.75rem;
       letter-spacing: 0.5px;
+      border-bottom: 2px solid #334155 !important;
     }
+
+    .table td {
+      border-color: #334155 !important;
+    }
+
     .badge-status {
       font-size: 0.9rem;
       padding: 8px 16px;
       border-radius: 30px;
     }
-    /* Alertas de cupos con mejor contraste */
+
+    /* Alertas de Cupos optimizadas para fondo oscuro */
     .status-ok {
-      background-color: #d1e7dd;
-      color: #0f5132;
+      background-color: #064e3b !important; /* Verde oscuro */
+      color: #6ee7b7 !important; /* Texto verde brillante */
       font-weight: 600;
-      border-radius: 6px;
     }
+
     .status-alert {
-      background-color: #f8d7da;
-      color: #842029;
+      background-color: #7f1d1d !important; /* Rojo oscuro */
+      color: #fca5a5 !important; /* Texto rojo brillante */
       font-weight: 600;
-      border-radius: 6px;
     }
+
+    /* Tarjetas de Indicadores (KPIs) */
     .kpi-card {
-      border-left: 5px solid #0d6efd;
+      border-left: 5px solid #3b82f6; /* Borde azul de acento */
+    }
+
+    .text-muted-custom {
+      color: #94a3b8;
+    }
+
+    /* Forzar que el encabezado se quede fijo al hacer scroll */
+    .sticky-header th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-  <div class="container">
+  <div class="container d-flex justify-content-between align-items-center">
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <span class="fs-4 fw-bold">🏍️ Logística Jujuy</span>
+      <img src="https://yuhmak.com.ar/wp-content/uploads/2021/04/Logo-Yuhmak-Web-01.png" alt="Yuhmak Argentina" class="me-2">
+      <span class="fs-5 fw-bold text-white ms-2 d-none d-sm-inline">| Logística Jujuy</span>
     </a>
-    <span id="statusBadge" class="badge bg-white text-dark badge-status fw-medium">⏳ Cargando...</span>
+    <span id="statusBadge" class="badge bg-secondary text-white badge-status fw-medium">⏳ Cargando...</span>
   </div>
 </nav>
 
@@ -77,27 +127,27 @@
   <div class="row g-3 mb-4">
     <div class="col-md-4">
       <div class="card p-3 kpi-card">
-        <div class="text-muted small text-uppercase fw-bold">Motos Totales en Stock</div>
-        <div id="kpiTotalStock" class="fs-2 fw-bold text-dark">-</div>
+        <div class="text-muted-custom small text-uppercase fw-bold">Motos Totales en Stock</div>
+        <div id="kpiTotalStock" class="fs-2 fw-bold text-white">-</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3 kpi-card" style="border-left-color: #dc3545;">
-        <div class="text-muted small text-uppercase fw-bold">Total Faltante para Cupos</div>
+      <div class="card p-3 kpi-card" style="border-left-color: #ef4444;">
+        <div class="text-muted-custom small text-uppercase fw-bold">Total Faltante para Cupos</div>
         <div id="kpiTotalFaltantes" class="fs-2 fw-bold text-danger">-</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3 kpi-card" style="border-left-color: #ffc107;">
-        <div class="text-muted small text-uppercase fw-bold text-truncate">Camiones Totales Necesarios</div>
+      <div class="card p-3 kpi-card" style="border-left-color: #f59e0b;">
+        <div class="text-muted-custom small text-uppercase fw-bold text-truncate">Camiones Totales Necesarios</div>
         <div id="kpiTotalCamiones" class="fs-2 fw-bold text-warning">-</div>
       </div>
     </div>
   </div>
 
   <div class="card mb-4 p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h4 fw-bold m-0 text-secondary">📊 Resumen de Sucursales</h2>
+    <div class="mb-3">
+      <h2 class="h4 fw-bold m-0 text-white">📊 Resumen de Sucursales</h2>
     </div>
     <div class="table-responsive table-container">
       <table id="summaryTable" class="table table-hover align-middle m-0 text-center">
@@ -119,10 +169,10 @@
   </div>
 
   <div class="card p-4">
-    <h2 class="h4 fw-bold mb-3 text-secondary">📋 Detalle del Listado de Motos</h2>
+    <h2 class="h4 fw-bold mb-3 text-white">📋 Detalle del Listado de Motos</h2>
     <div class="table-responsive table-container" style="max-height: 500px;">
       <table id="motosTable" class="table table-striped table-hover align-middle m-0 text-center">
-        <thead class="sticky-top bg-white" style="z-index: 1;">
+        <thead class="sticky-header">
           </thead>
         <tbody>
           </tbody>
@@ -170,7 +220,6 @@ function procesarExcel(workbook){
 
   let headersCargados = false;
   
-  // Variables para acumular los KPIs globales
   let globalStock = 0;
   let globalFaltantes = 0;
   let globalCamiones = 0;
@@ -192,20 +241,19 @@ function procesarExcel(workbook){
     const sobran = Math.max(stock - capacidad, 0);
     const camiones = faltan > 0 ? Math.ceil(faltan / 8) : 0;
 
-    // Sumar a los contadores globales
     globalStock += stock;
     globalFaltantes += faltan;
     globalCamiones += camiones;
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td class="fw-bold text-start ps-3">${nombreSucursal}</td>
+      <td class="fw-bold text-start ps-3 text-white">${nombreSucursal}</td>
       <td><span class="badge bg-secondary">${almacen}</span></td>
       <td>${capacidad}</td>
-      <td class="fw-bold text-primary">${stock}</td>
+      <td class="fw-bold text-info">${stock}</td>
       <td class="${faltan > 0 ? 'status-alert' : 'status-ok'}">${faltan}</td>
       <td class="${sobran > 0 ? 'status-alert' : 'status-ok'}">${sobran}</td>
-      <td class="fw-bold">${camiones > 0 ? '🚛 ' + camiones : '0'}</td>
+      <td class="fw-bold text-warning">${camiones > 0 ? '🚛 ' + camiones : '0'}</td>
     `;
     resumenBody.appendChild(row);
 
@@ -218,12 +266,11 @@ function procesarExcel(workbook){
 
     filas.forEach(fila => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="text-muted small text-start ps-3">${nombreSucursal}</td>` + headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
+      tr.innerHTML = `<td class="text-muted-custom small text-start ps-3">${nombreSucursal}</td>` + headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
       motosBody.appendChild(tr);
     });
   });
 
-  // Mostrar los resultados en los cuadros de KPI de arriba
   document.getElementById("kpiTotalStock").innerText = globalStock;
   document.getElementById("kpiTotalFaltantes").innerText = globalFaltantes;
   document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " 🚛" : "0";
