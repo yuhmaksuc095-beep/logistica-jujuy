@@ -33,13 +33,13 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
-    /* CORRECCIÓN CRÍTICA DE CONTRASTE PARA LOS CARD KPIS SUPERIORES */
+    /* Contraste para los paneles KPI superiores */
     .kpi-card {
       border-left: 5px solid #38bdf8; /* Azul celeste brillante */
     }
     
     .kpi-title {
-      color: #94a3b8 !important; /* Gris claro de alta visibilidad para los títulos de las tarjetas */
+      color: #94a3b8 !important; /* Gris claro de alta visibilidad */
       font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -52,7 +52,7 @@
     }
 
     .kpi-number-red {
-      color: #ef4444 !important; /* Rojo vivo y sumamente llamativo */
+      color: #ef4444 !important; /* Rojo vivo */
       font-weight: 700;
     }
 
@@ -61,12 +61,12 @@
       font-weight: 700;
     }
 
-    /* Diseño del contenedor con barra de desplazamiento (Scrollbar) */
+    /* Contenedor con barra de desplazamiento (Scrollbar) */
     .table-container {
       border-radius: 8px;
       overflow: auto;
       border: 1px solid #334155;
-      max-height: 480px; /* Altura máxima para activar la barra de desplazamiento */
+      max-height: 480px; 
     }
 
     /* Personalización de la barra de desplazamiento */
@@ -85,7 +85,7 @@
       background: #64748b;
     }
 
-    /* TABLAS MODO OSCURO - Fuerza visibilidad total de los datos */
+    /* TABLAS MODO OSCURO */
     .table-dark-custom {
       width: 100%;
       margin-bottom: 0 !important;
@@ -109,13 +109,13 @@
     }
 
     .table-dark-custom td {
-      background-color: #111e38 !important; /* Anula el blanco de Bootstrap */
-      color: #ffffff !important; /* Todo el contenido numérico y de texto ahora es blanco brillante */
+      background-color: #111e38 !important;
+      color: #ffffff !important; /* Todo el texto y números en blanco puro */
       padding: 12px 10px;
       border: 1px solid #233554 !important; /* Bordes azul oscuro */
     }
 
-    /* Alertas de Cupos adaptadas para contraste en Modo Oscuro */
+    /* Alertas de Cupos */
     .status-ok {
       background-color: #064e3b !important; /* Verde oscuro sutil */
       color: #34d399 !important; /* Texto verde brillante */
@@ -214,7 +214,8 @@ const sucursales = {
 window.addEventListener("DOMContentLoaded", () => {
   const badge = document.getElementById("statusBadge");
   
-  fetch("datos.xlsx?v=" + Math.random())
+  // CORRECCIÓN PARA ACTUALIZACIÓN INMEDIATA: Añadimos 'cache: "no-store"'
+  fetch("datos.xlsx?v=" + Date.now(), { cache: "no-store" })
     .then(res => {
       if (!res.ok) throw new Error();
       return res.arrayBuffer();
