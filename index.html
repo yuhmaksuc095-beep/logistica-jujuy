@@ -133,6 +133,19 @@
       padding: 8px 16px;
       border-radius: 30px;
     }
+
+    /* Control de carga manual */
+    .input-file-custom {
+      background-color: #1e293b;
+      color: #ffffff;
+      border: 1px solid #475569;
+    }
+    .input-file-custom:focus {
+      background-color: #1e293b;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -140,13 +153,18 @@
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <span class="fs-4 fw-bold text-white">🏍️ Logística Jujuy</span>
+      <span class="fs-4 fw-bold text-white">命️ Logística Jujuy</span>
     </a>
     <span id="statusBadge" class="badge bg-secondary text-white badge-status fw-medium">⏳ Cargando...</span>
   </div>
 </nav>
 
 <div class="container mb-5">
+  
+  <div class="card p-3 mb-4">
+    <label class="form-label fw-bold text-info small text-uppercase mb-2">🔄 Actualización de Emergencia (Subida Manual)</label>
+    <input type="file" id="manualExcelInput" class="form-control input-file-custom" accept=".xlsx, .xls" />
+  </div>
   
   <div class="row g-3 mb-4">
     <div class="col-md-4">
@@ -211,10 +229,10 @@ const sucursales = {
   "Brown 2296": { almacen:37, capacidad:230 }
 };
 
+const badge = document.getElementById("statusBadge");
+
+// ACCIÓN 1: Intento de lectura automática desde el servidor (Evitando caché)
 window.addEventListener("DOMContentLoaded", () => {
-  const badge = document.getElementById("statusBadge");
-  
-  // CORRECCIÓN PARA ACTUALIZACIÓN INMEDIATA: Añadimos 'cache: "no-store"'
   fetch("datos.xlsx?v=" + Date.now(), { cache: "no-store" })
     .then(res => {
       if (!res.ok) throw new Error();
@@ -224,13 +242,29 @@ window.addEventListener("DOMContentLoaded", () => {
       const data = new Uint8Array(buffer);
       const workbook = XLSX.read(data, {type:'array'});
       procesarExcel(workbook);
-      badge.innerHTML = "✅ Conectado";
+      badge.innerHTML = "✅ Conectado (Auto)";
       badge.className = "badge bg-success text-white badge-status";
     })
     .catch(() => {
-      badge.innerHTML = "❌ Error al leer datos.xlsx";
-      badge.className = "badge bg-danger text-white badge-status";
+      badge.innerHTML = "⚠️ Esperando subida de archivo manual";
+      badge.className = "badge bg-warning text-dark badge-status";
     });
+});
+
+// ACCIÓN 2: Lector Manual (Si arrastras el Excel nuevo aquí, se actualiza al instante sin importar la caché)
+document.getElementById("manualExcelInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const data = new Uint8Array(event.target.result);
+    const workbook = XLSX.read(data, {type:'array'});
+    procesarExcel(workbook);
+    badge.innerHTML = "✅ Actualizado Manualmente";
+    badge.className = "badge bg-primary text-white badge-status";
+  };
+  reader.readAsArrayBuffer(file);
 });
 
 function procesarExcel(workbook) {
