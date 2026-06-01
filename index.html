@@ -4,144 +4,76 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Logística de Sucursales Jujuy - Yuhmak</title>
-
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* Configuración Global del Tema Oscuro */
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #0f172a; /* Fondo azul oscuro profundo */
-      color: #f8fafc; /* Texto claro general */
+      background-color: #0f172a;
+      color: #f8fafc;
       padding-bottom: 50px;
     }
-
     .navbar {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border-bottom: 1px solid #334155;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-
-    /* Estilos de las Tarjetas */
-    /* Estilos de las Tarjetas de los Bloques */
     .card {
-      background: #1e293b; /* Fondo de tarjetas gris oscuro */
+      background: #1e293b;
       border: 1px solid #334155;
       border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
-
-    /* CORRECCIÓN CRÍTICA DE CONTRASTE PARA LOS CARD KPIS SUPERIORES */
-    .kpi-card {
-      border-left: 5px solid #38bdf8; /* Azul celeste brillante */
-    }
-    
+    .kpi-card { border-left: 5px solid #38bdf8; }
     .kpi-title {
-      color: #94a3b8 !important; /* Gris claro de alta visibilidad para los títulos de las tarjetas */
+      color: #94a3b8 !important;
       font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-
-    .kpi-number-white {
-      color: #ffffff !important; /* Blanco brillante e intenso */
-      font-weight: 700;
-    }
-
-    .kpi-number-red {
-      color: #ef4444 !important; /* Rojo vivo y sumamente llamativo */
-      font-weight: 700;
-    }
-
-    .kpi-number-yellow {
-      color: #f59e0b !important; /* Amarillo/Dorado encendido */
-      font-weight: 700;
-    }
-
-    /* Diseño del contenedor con barra de desplazamiento (Scrollbar) */
     .table-container {
       border-radius: 8px;
       overflow: auto;
       border: 1px solid #334155;
-      max-height: 480px; /* Altura máxima para activar la barra de desplazamiento */
+      max-height: 480px; 
     }
-
-    /* Personalización de la barra de desplazamiento */
-    .table-container::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    .table-container::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    .table-container::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 4px;
-    }
-    .table-container::-webkit-scrollbar-thumb:hover {
-      background: #64748b;
-    }
-
-    /* TABLAS MODO OSCURO - Fuerza visibilidad total de los datos */
     .table-dark-custom {
       width: 100%;
-      margin-bottom: 0 !important;
       background-color: #111e38 !important;
-      color: #ffffff !important; /* Fuerza todo el texto a blanco puro */
-      color: #ffffff !important; 
+      color: #ffffff !important;
       border-collapse: collapse;
     }
-
     .table-dark-custom th {
       position: sticky;
       top: 0;
-      background-color: #1e293b !important; /* Fondo de encabezados fijo */
-      color: #38bdf8 !important; /* Títulos en azul celeste */
+      background-color: #1e293b !important;
+      color: #38bdf8 !important;
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.75rem;
-      letter-spacing: 0.5px;
       padding: 12px 10px;
       border-bottom: 2px solid #334155 !important;
       z-index: 10;
     }
-
     .table-dark-custom td {
-      background-color: #111e38 !important; /* Anula el blanco de Bootstrap */
-      color: #ffffff !important; /* CAMBIO: Todo el contenido numérico y de texto ahora es blanco brillante */
-      color: #ffffff !important; /* Todo el contenido numérico y de texto ahora es blanco brillante */
+      background-color: #111e38 !important;
+      color: #ffffff !important;
       padding: 12px 10px;
-      border: 1px solid #233554 !important; /* Bordes azul oscuro */
+      border: 1px solid #233554 !important;
     }
-
-    /* Alertas de Cupos adaptadas para contraste en Modo Oscuro */
-    .status-ok {
-      background-color: #064e3b !important; /* Verde oscuro sutil */
-      color: #34d399 !important; /* Texto verde brillante */
-      font-weight: 600;
-    }
-
-    .status-alert {
-      background-color: #7f1d1d !important; /* Rojo oscuro sutil */
-      color: #f87171 !important; /* Texto rojo brillante */
-      font-weight: 600;
-    }
-
-    .badge-status {
-      font-size: 0.9rem;
-      padding: 8px 16px;
-      border-radius: 30px;
-    }
+    .status-ok { background-color: #064e3b !important; color: #34d399 !important; font-weight: 600; }
+    .status-alert { background-color: #7f1d1d !important; color: #f87171 !important; font-weight: 600; }
+    .badge-status { font-size: 0.9rem; padding: 8px 16px; border-radius: 30px; }
+    .input-file-custom { background-color: #1e293b; color: #ffffff; border: 1px solid #475569; }
   </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-  <div class="container">
+  <div class="container d-flex justify-content-between align-items-center">
     <a class="navbar-brand d-flex align-items-center" href="#">
       <span class="fs-4 fw-bold text-white">🏍️ Logística Jujuy</span>
     </a>
@@ -150,38 +82,35 @@
 </nav>
 
 <div class="container mb-5">
-
+  
+  <div class="card p-3 mb-4">
+    <label class="form-label fw-bold text-info small text-uppercase mb-2">🔄 Solución Alternativa (Arrastrar Excel de hoy aquí)</label>
+    <input type="file" id="manualExcelInput" class="form-control input-file-custom" accept=".xlsx, .xls" />
+  </div>
+  
   <div class="row g-3 mb-4">
     <div class="col-md-4">
       <div class="card p-3 kpi-card">
-        <div class="text-muted small text-uppercase fw-bold">Motos Totales en Stock</div>
-        <div id="kpiTotalStock" class="fs-2 fw-bold text-white">-</div>
         <div class="kpi-title">Motos Totales en Stock</div>
-        <div id="kpiTotalStock" class="fs-2 kpi-number-white">-</div>
+        <div id="kpiTotalStock" class="fs-2 fw-bold">-</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3 kpi-card" style="border-left-color: #f87171;">
-        <div class="text-muted small text-uppercase fw-bold">Total Faltante para Cupos</div>
-        <div id="kpiTotalFaltantes" class="fs-2 fw-bold text-danger">-</div>
+      <div class="card p-3 kpi-card" style="border-left-color: #ef4444;">
         <div class="kpi-title">Total Faltante para Cupos</div>
-        <div id="kpiTotalFaltantes" class="fs-2 kpi-number-red">-</div>
+        <div id="kpiTotalFaltantes" class="fs-2 fw-bold text-danger">-</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3 kpi-card" style="border-left-color: #fbbf24;">
-        <div class="text-muted small text-uppercase fw-bold text-truncate">Camiones Totales Necesarios</div>
-        <div id="kpiTotalCamiones" class="fs-2 fw-bold text-warning">-</div>
+      <div class="card p-3 kpi-card" style="border-left-color: #f59e0b;">
         <div class="kpi-title">Camiones Totales Necesarios</div>
-        <div id="kpiTotalCamiones" class="fs-2 kpi-number-yellow">-</div>
+        <div id="kpiTotalCamiones" class="fs-2 fw-bold text-warning">-</div>
       </div>
     </div>
   </div>
 
   <div class="card mb-4 p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h4 fw-bold m-0 text-white">📊 Resumen de Sucursales</h2>
-    </div>
+    <h2 class="h4 fw-bold mb-3 text-white">📊 Resumen de Sucursales</h2>
     <div class="table-container" style="max-height: none;">
       <table id="summaryTable" class="table-dark-custom text-center align-middle">
         <thead>
@@ -204,61 +133,69 @@
     <h2 class="h4 fw-bold mb-3 text-white">📋 Detalle del Listado de Motos</h2>
     <div class="table-container">
       <table id="motosTable" class="table-dark-custom text-center align-middle">
-        <thead>
-          </thead>
+        <thead></thead>
         <tbody></tbody>
       </table>
     </div>
   </div>
-
 </div>
 
 <script>
-const sucursales = {
+// Mapeo base de configuraciones fijas de la empresa
+const sucursalesConfig = {
   "Honda Jujuy": { almacen:104, capacidad:100 },
   "Brown 902": { almacen:38, capacidad:140 },
-  "Brown 2296": { almacen:37, capacidad:220 }
+  "Brown 2296": { almacen:37, capacidad:230 }
 };
 
-window.addEventListener("DOMContentLoaded", () => {
-  const badge = document.getElementById("statusBadge");
+const badge = document.getElementById("statusBadge");
 
-  fetch("datos.xlsx?v=" + Math.random())
+window.addEventListener("DOMContentLoaded", () => {
+  fetch("datos.xlsx?v=" + Date.now(), { cache: "no-store" })
     .then(res => {
       if (!res.ok) throw new Error();
       return res.arrayBuffer();
     })
     .then(buffer => {
-      const data = new Uint8Array(buffer);
-      const workbook = XLSX.read(data, {type:'array'});
-      procesarExcel(workbook);
+      procesarExcel(XLSX.read(new Uint8Array(buffer), {type:'array'}));
       badge.innerHTML = "✅ Conectado";
       badge.className = "badge bg-success text-white badge-status";
     })
     .catch(() => {
-      badge.innerHTML = "❌ Error al leer datos.xlsx";
-      badge.className = "badge bg-danger text-white badge-status";
+      badge.innerHTML = "⚠️ Esperando archivo Excel";
+      badge.className = "badge bg-warning text-dark badge-status";
     });
+});
+
+document.getElementById("manualExcelInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    procesarExcel(XLSX.read(new Uint8Array(event.target.result), {type:'array'}));
+    badge.innerHTML = "✅ Actualizado Manual";
+    badge.className = "badge bg-primary text-white badge-status";
+  };
+  reader.readAsArrayBuffer(file);
 });
 
 function procesarExcel(workbook) {
   const resumenBody = document.querySelector("#summaryTable tbody");
-  resumenBody.innerHTML = "";
   const motosHead = document.querySelector("#motosTable thead");
   const motosBody = document.querySelector("#motosTable tbody");
-  motosHead.innerHTML = "";
-  motosBody.innerHTML = "";
+  resumenBody.innerHTML = ""; motosHead.innerHTML = ""; motosBody.innerHTML = "";
 
-  let headersCargados = false;
+  let headersCargados = false, globalStock = 0, globalFaltantes = 0, globalCamiones = 0;
 
-  let globalStock = 0;
-  let globalFaltantes = 0;
-  let globalCamiones = 0;
+  // Analizador inteligente de nombres de pestañas para evitar errores de tipeo
+  const hojasExcel = workbook.SheetNames;
 
-  Object.keys(sucursales).forEach(nombreSucursal => {
-    const hoja = workbook.Sheets[nombreSucursal];
-    if(!hoja) return;
+  Object.keys(sucursalesConfig).forEach(nombreSucursal => {
+    // Busca coincidencia flexible (ignorando espacios finales o mayúsculas cambiadas)
+    const nombreHojaReal = hojasExcel.find(h => h.trim().toLowerCase() === nombreSucursal.toLowerCase());
+    if(!nombreHojaReal) return;
 
+    const hoja = workbook.Sheets[nombreHojaReal];
     const datos = XLSX.utils.sheet_to_json(hoja, {header:1});
     if(datos.length === 0) return;
 
@@ -266,17 +203,14 @@ function procesarExcel(workbook) {
     const filas = datos.slice(1).filter(row => row.some(cell => cell !== undefined && cell !== ""));
 
     const stock = filas.length;
-    const capacidad = sucursales[nombreSucursal].capacidad;
-    const almacen = sucursales[nombreSucursal].almacen;
+    const capacidad = sucursalesConfig[nombreSucursal].capacidad;
+    const almacen = sucursalesConfig[nombreSucursal].almacen;
     const faltan = Math.max(capacidad - stock, 0);
     const sobran = Math.max(stock - capacidad, 0);
     const camiones = faltan > 0 ? Math.ceil(faltan / 8) : 0;
 
-    globalStock += stock;
-    globalFaltantes += faltan;
-    globalCamiones += camiones;
+    globalStock += stock; globalFaltantes += faltan; globalCamiones += camiones;
 
-    // Fila del resumen de sucursal
     const row = document.createElement("tr");
     row.innerHTML = `
       <td class="fw-bold text-start ps-3 text-info">${nombreSucursal}</td>
@@ -285,32 +219,27 @@ function procesarExcel(workbook) {
       <td class="fw-bold text-white">${stock}</td>
       <td class="${faltan > 0 ? 'status-alert' : 'status-ok'}">${faltan}</td>
       <td class="${sobran > 0 ? 'status-alert' : 'status-ok'}">${sobran}</td>
-      <td class="fw-bold text-warning">${camiones > 0 ? camiones + ' Camión(es)' : '0'}</td>
-      <td class="fw-bold text-warning">${camiones > 0 ? camiones + ' Camion(es)' : '0'}</td>
+      <td class="fw-bold text-warning">${camiones > 0 ? '🚛 ' + camiones + ' Camión(es)' : '0'}</td>
     `;
     resumenBody.appendChild(row);
 
-    // Carga de títulos dinámicos del listado de motos
-    if(!headersCargados){
+    if(!headersCargados && headers){
       const headRow = document.createElement("tr");
       headRow.innerHTML = "<th>Sucursal</th>" + headers.map(h => `<th>${h || ""}</th>`).join("");
       motosHead.appendChild(headRow);
       headersCargados = true;
     }
 
-    // Carga de filas del detalle de motos
     filas.forEach(fila => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="text-info small text-start ps-3 fw-bold">${nombreSucursal}</td>` + 
-                     headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
+      tr.innerHTML = `<td class="text-info small text-start ps-3 fw-bold">${nombreSucursal}</td>` + headers.map((_, index) => `<td>${fila[index] ?? ""}</td>`).join("");
       motosBody.appendChild(tr);
     });
   });
 
-  // Renderización de contadores en los paneles KPI de la zona superior
   document.getElementById("kpiTotalStock").innerText = globalStock;
   document.getElementById("kpiTotalFaltantes").innerText = globalFaltantes;
-  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " Camiones" : "0";
+  document.getElementById("kpiTotalCamiones").innerText = globalCamiones > 0 ? globalCamiones + " 🚛" : "0";
 }
 </script>
 </body>
